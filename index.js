@@ -78,13 +78,14 @@ client.on('messageCreate', async message => {
 
                 .setColor('#ff0000')
 
-                .setThumbnail('https://i.imgur.com/1X4JQ9x.png')
+                // LOGO
+                .setThumbnail('https://cdn.discordapp.com/icons/1372870532164497508/a_1.gif')
 
-                .setImage('https://i.imgur.com/r6VtAqF.jpeg')
+                // BANNER
+                .setImage('https://images.unsplash.com/photo-1542751110-97427bbecf20?q=80&w=1400&auto=format&fit=crop')
 
                 .setFooter({
-                    text: 'Originalii Romania • FiveM',
-                    iconURL: 'https://i.imgur.com/1X4JQ9x.png'
+                    text: 'Originalii Romania • FiveM'
                 })
 
                 .setTimestamp();
