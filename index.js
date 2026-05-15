@@ -1,14 +1,38 @@
-// LIVE SERVER STATUS
-if (message.content === '!server') {
+const {
+    Client,
+    GatewayIntentBits,
+    EmbedBuilder
+} = require('discord.js');
 
-    try {
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent
+    ]
+});
 
-        const response = await fetch('https://servers-frontend.fivem.net/api/servers/single/5oyzqr7');
+const TOKEN = process.env.TOKEN;
 
-        const data = await response.json();
+// ================= READY =================
 
-        const players = data.Data.clients || 0;
-        const maxPlayers = data.Data.sv_maxclients || 128;
+client.once('ready', () => {
+
+    console.log('Bot online!');
+
+    client.user.setActivity('Originalii Romania');
+
+});
+
+// ================= COMMANDS =================
+
+client.on('messageCreate', async message => {
+
+    if (message.author.bot) return;
+
+    // ================= SERVER =================
+
+    if (message.content === '!server') {
 
         const embed = new EmbedBuilder()
 
@@ -17,7 +41,7 @@ if (message.content === '!server') {
             .setDescription(
                 '━━━━━━━━━━━━━━━━━━\n' +
                 '🟢 **Server Online**\n\n' +
-                `👥 **Players:** \`${players}/${maxPlayers}\`\n\n` +
+                '👥 **Players:** `Live`\n\n' +
                 '🌐 **Connect:**\n' +
                 '`cfx.re/join/5oyzqr7`\n' +
                 '━━━━━━━━━━━━━━━━━━'
@@ -48,19 +72,15 @@ if (message.content === '!server') {
             .setImage('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1400&auto=format&fit=crop')
 
             .setFooter({
-                text: 'Originalii Romania • FiveM',
-                iconURL: 'https://cdn-icons-png.flaticon.com/512/5968/5968292.png'
+                text: 'Originalii Romania • FiveM'
             })
 
             .setTimestamp();
 
         message.channel.send({ embeds: [embed] });
 
-    } catch (error) {
-
-        console.log(error);
-
-        message.channel.send('❌ Server offline.');
-
     }
-}
+
+});
+
+client.login(TOKEN);
