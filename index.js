@@ -99,26 +99,46 @@ client.on('messageCreate', async message => {
         });
 
         const embed = new EmbedBuilder()
+
             .setTitle('🔥 ORIGINALII ROMANIA SHOP 🔥')
-            .setDescription(text)
+
+            .setDescription(
+                '━━━━━━━━━━━━━━━━━━\n' +
+                '💎 SHOP OFICIAL SERVER 💎\n' +
+                '━━━━━━━━━━━━━━━━━━\n\n' +
+                text
+            )
+
             .addFields(
                 {
                     name: '💳 METODE DE PLATĂ',
-                    value: '💠 REVOLUT\n🏦 TRANSFER BANCAR\n💙 PAYPAL'
+                    value:
+                    '💠 REVOLUT\n' +
+                    '🏦 TRANSFER BANCAR\n' +
+                    '💙 PAYPAL'
                 },
                 {
-                    name: '📌 PLATĂ',
+                    name: '📌 INFORMAȚII IMPORTANTE',
                     value:
-                    '✅ Plata se face DOAR către:\n' +
+                    '✅ Plata se face DOAR către:\n\n' +
                     '👑 @Legend\n' +
                     '👑 @Tata Bodi\n' +
                     '👑 @kenny\n\n' +
                     '❌ Alte plăți NU se iau în considerare.'
                 }
             )
+
             .setColor('#0099ff')
+
             .setThumbnail('https://cdn-icons-png.flaticon.com/512/3135/3135715.png')
+
             .setImage('https://images.unsplash.com/photo-1556740749-887f6717d7e4?q=80&w=1400&auto=format&fit=crop')
+
+            .setFooter({
+                text: 'Originalii Romania • Shop Oficial',
+                iconURL: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'
+            })
+
             .setTimestamp();
 
         message.channel.send({ embeds: [embed] });
@@ -134,11 +154,46 @@ client.on('messageCreate', async message => {
         });
 
         const embed = new EmbedBuilder()
+
             .setTitle('👑 ORIGINALII ROMANIA VIP SHOP 👑')
-            .setDescription(text)
-            .setColor('Gold')
+
+            .setDescription(
+                '━━━━━━━━━━━━━━━━━━\n' +
+                '💎 VIP SHOP OFICIAL 💎\n' +
+                '━━━━━━━━━━━━━━━━━━\n\n' +
+                text
+            )
+
+            .addFields(
+                {
+                    name: '💳 METODE DE PLATĂ',
+                    value:
+                    '💠 REVOLUT\n' +
+                    '🏦 TRANSFER BANCAR\n' +
+                    '💙 PAYPAL'
+                },
+                {
+                    name: '📌 INFORMAȚII IMPORTANTE',
+                    value:
+                    '✅ Plata se face DOAR către:\n\n' +
+                    '👑 @Legend\n' +
+                    '👑 @Tata Bodi\n' +
+                    '👑 @kenny\n\n' +
+                    '❌ Alte plăți NU se iau în considerare.'
+                }
+            )
+
+            .setColor('#FFD700')
+
             .setThumbnail('https://cdn-icons-png.flaticon.com/512/2583/2583344.png')
+
             .setImage('https://images.unsplash.com/photo-1518546305927-5a555bb7020d?q=80&w=1400&auto=format&fit=crop')
+
+            .setFooter({
+                text: 'Originalii Romania • VIP Shop',
+                iconURL: 'https://cdn-icons-png.flaticon.com/512/2583/2583344.png'
+            })
+
             .setTimestamp();
 
         message.channel.send({ embeds: [embed] });
@@ -149,25 +204,79 @@ client.on('messageCreate', async message => {
 
         const embed = new EmbedBuilder()
             .setTitle('💸 DONAȚII')
-            .setDescription('Poți dona prin:\n\n💠 Revolut\n🏦 Transfer Bancar\n💙 PayPal')
-            .setColor('Green');
+            .setDescription(
+                '💠 Revolut\n' +
+                '🏦 Transfer Bancar\n' +
+                '💙 PayPal'
+            )
+            .setColor('Green')
+            .setImage('https://i.imgur.com/7lcwJEN.jpeg');
 
         message.channel.send({ embeds: [embed] });
     }
 
-    // SERVER STATUS
+    // LIVE SERVER STATUS
     if (message.content === '!server') {
 
-        const embed = new EmbedBuilder()
-            .setTitle('🎮 SERVER STATUS')
-            .setDescription(
-                '🟢 Server Online\n' +
-                '👥 Players: 64/128\n' +
-                '🌐 connect cfx.re/join/5oyzqr7'
-            )
-            .setColor('Blue');
+        try {
 
-        message.channel.send({ embeds: [embed] });
+            const response = await fetch('https://servers-frontend.fivem.net/api/servers/single/5oyzqr7');
+            const data = await response.json();
+
+            const players = data.Data.clients;
+            const maxPlayers = data.Data.sv_maxclients;
+
+            const embed = new EmbedBuilder()
+
+                .setTitle('🎮 ORIGINALII ROMANIA • SERVER STATUS')
+
+                .setDescription(
+                    '━━━━━━━━━━━━━━━━━━\n' +
+                    '🟢 **Server Online**\n\n' +
+                    `👥 **Players:** \`${players}/${maxPlayers}\`\n\n` +
+                    '🌐 **Connect:**\n' +
+                    '`cfx.re/join/5oyzqr7`\n' +
+                    '━━━━━━━━━━━━━━━━━━'
+                )
+
+                .addFields(
+                    {
+                        name: '⚡ STATUS',
+                        value: '🟢 Healthy',
+                        inline: true
+                    },
+                    {
+                        name: '⏰ UPTIME',
+                        value: '24/7',
+                        inline: true
+                    },
+                    {
+                        name: '🔥 SERVER',
+                        value: 'Romania RP',
+                        inline: true
+                    }
+                )
+
+                .setColor('#ff0000')
+
+                .setThumbnail('https://cdn-icons-png.flaticon.com/512/5968/5968292.png')
+
+                .setImage('https://i.imgur.com/7lcwJEN.jpeg')
+
+                .setFooter({
+                    text: 'Originalii Romania • FiveM',
+                    iconURL: 'https://cdn-icons-png.flaticon.com/512/5968/5968292.png'
+                })
+
+                .setTimestamp();
+
+            message.channel.send({ embeds: [embed] });
+
+        } catch (err) {
+
+            message.channel.send('❌ Server offline.');
+
+        }
     }
 
     // BUY
@@ -198,56 +307,6 @@ client.on('messageCreate', async message => {
         canal.send(`🛒 ${message.author} a deschis un ticket pentru produsul ID ${produs}`);
     }
 
-    // CLEAR
-    if (message.content.startsWith('!clear')) {
-
-        if (!message.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
-            return message.reply('❌ Nu ai permisiune.');
-        }
-
-        const args = message.content.split(' ');
-        const nr = parseInt(args[1]);
-
-        if (!nr) return;
-
-        await message.channel.bulkDelete(nr, true);
-
-        message.channel.send(`✅ Am șters ${nr} mesaje.`)
-            .then(msg => setTimeout(() => msg.delete(), 3000));
-    }
-
-    // KICK
-    if (message.content.startsWith('!kick')) {
-
-        if (!message.member.permissions.has(PermissionsBitField.Flags.KickMembers)) {
-            return message.reply('❌ Nu ai permisiune.');
-        }
-
-        const membru = message.mentions.members.first();
-
-        if (!membru) return;
-
-        membru.kick();
-
-        message.channel.send(`👢 ${membru.user.tag} a primit kick.`);
-    }
-
-    // BAN
-    if (message.content.startsWith('!ban')) {
-
-        if (!message.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
-            return message.reply('❌ Nu ai permisiune.');
-        }
-
-        const membru = message.mentions.members.first();
-
-        if (!membru) return;
-
-        membru.ban();
-
-        message.channel.send(`🔨 ${membru.user.tag} a primit ban.`);
-    }
-
     // HELP
     if (message.content === '!help') {
 
@@ -256,12 +315,9 @@ client.on('messageCreate', async message => {
             .setDescription(
                 '`!shop` - shop server\n' +
                 '`!vipshop` - vip shop\n' +
-                '`!donate` - metode donații\n' +
-                '`!server` - status server\n' +
-                '`!buy ID` - cumpără produs\n' +
-                '`!clear` - șterge mesaje\n' +
-                '`!kick` - kick membru\n' +
-                '`!ban` - ban membru'
+                '`!donate` - donații\n' +
+                '`!server` - status server live\n' +
+                '`!buy ID` - ticket cumpărare'
             )
             .setColor('Purple');
 
