@@ -20,6 +20,12 @@ const client = new Client({
 
 const TOKEN = process.env.TOKEN;
 
+// ================= STAFF ROLES =================
+
+const supportRoleId = '1488116055963471984';
+const ownerRoleId = '1488115246441697311';
+const coOwnerRoleId = '1488115248945827992';
+
 // ================= SHOP =================
 
 const shop = [
@@ -46,7 +52,7 @@ const vipshop = [
 
 // ================= READY =================
 
-client.once('ready', () => {
+client.once('clientReady', () => {
 
     console.log('Bot online!');
 
@@ -164,7 +170,7 @@ client.on('messageCreate', async message => {
 
     }
 
-    // ================= SERVER STATUS =================
+    // ================= SERVER =================
 
     if (message.content === '!server') {
 
@@ -273,6 +279,11 @@ client.on('messageCreate', async message => {
 
 client.on('interactionCreate', async interaction => {
 
+    const isStaff =
+        interaction.member.roles.cache.has(supportRoleId) ||
+        interaction.member.roles.cache.has(ownerRoleId) ||
+        interaction.member.roles.cache.has(coOwnerRoleId);
+
     // ================= BUTTONS =================
 
     if (interaction.isButton()) {
@@ -334,6 +345,15 @@ client.on('interactionCreate', async interaction => {
 
         if (interaction.customId === 'close_ticket') {
 
+            if (!isStaff) {
+
+                return interaction.reply({
+                    content: '❌ Nu ai acces.',
+                    ephemeral: true
+                });
+
+            }
+
             await interaction.reply({
                 content: '❌ Ticket-ul se va închide în 5 secunde.'
             });
@@ -356,6 +376,15 @@ client.on('interactionCreate', async interaction => {
         // ================= WAITING =================
 
         if (interaction.customId === 'waiting_ticket') {
+
+            if (!isStaff) {
+
+                return interaction.reply({
+                    content: '❌ Nu ai acces.',
+                    ephemeral: true
+                });
+
+            }
 
             const embed = new EmbedBuilder()
 
@@ -380,18 +409,119 @@ client.on('interactionCreate', async interaction => {
 
         if (interaction.customId === 'higher_ticket') {
 
+            if (!isStaff) {
+
+                return interaction.reply({
+                    content: '❌ Nu ai acces.',
+                    ephemeral: true
+                });
+
+            }
+
+            await interaction.channel.permissionOverwrites.edit(
+                interaction.guild.id,
+                {
+                    SendMessages: false
+                }
+            );
+
             const embed = new EmbedBuilder()
 
-                .setTitle('👑 RETRIMIS')
+                .setTitle('👑 TICKET RETRIMIS')
 
                 .setDescription(
                     '━━━━━━━━━━━━━━━━━━\n' +
                     '📩 Ticket-ul a fost retrimis\n' +
-                    'către un grad superior.\n' +
+                    'către un grad superior.\n\n' +
+                    '⛔ Nimeni nu mai poate scrie\n' +
+                    'până la preluarea ticket-ului.\n' +
                     '━━━━━━━━━━━━━━━━━━'
                 )
 
                 .setColor('#ff0000');
+
+            interaction.reply({
+
+                content:
+                    `<@&1488115246441697311> <@&1488115248945827992>`,
+
+                embeds: [embed]
+
+            });
+
+            const takeRow = new ActionRowBuilder().addComponents(
+
+                new ButtonBuilder()
+                    .setCustomId('take_ticket')
+                    .setLabel('👑 PRELUARE TICKET')
+                    .setStyle(ButtonStyle.Success)
+
+            );
+
+            interaction.channel.send({
+
+                content:
+                    `<@&1488115246441697311> <@&1488115248945827992>`,
+
+                embeds: [
+
+                    new EmbedBuilder()
+
+                        .setTitle('👑 PRELUARE NECESARĂ')
+
+                        .setDescription(
+                            '━━━━━━━━━━━━━━━━━━\n' +
+                            '📩 Doar Owner / Co-Owner\n' +
+                            'poate prelua acest ticket.\n' +
+                            '━━━━━━━━━━━━━━━━━━'
+                        )
+
+                        .setColor('#ffaa00')
+
+                ],
+
+                components: [takeRow]
+
+            });
+
+        }
+
+        // ================= TAKE TICKET =================
+
+        if (interaction.customId === 'take_ticket') {
+
+            const isHighStaff =
+                interaction.member.roles.cache.has(ownerRoleId) ||
+                interaction.member.roles.cache.has(coOwnerRoleId);
+
+            if (!isHighStaff) {
+
+                return interaction.reply({
+                    content: '❌ Doar Owner / Co-Owner poate prelua.',
+                    ephemeral: true
+                });
+
+            }
+
+            await interaction.channel.permissionOverwrites.edit(
+                interaction.guild.id,
+                {
+                    SendMessages: true
+                }
+            );
+
+            const embed = new EmbedBuilder()
+
+                .setTitle('✅ TICKET PRELUAT')
+
+                .setDescription(
+                    '━━━━━━━━━━━━━━━━━━\n' +
+                    `👑 Ticket preluat de ${interaction.user}\n\n` +
+                    '📩 Acum conversația poate continua.\n' +
+                    '━━━━━━━━━━━━━━━━━━'
+                )
+
+                .setColor('#00ff88');
 
             interaction.reply({
                 embeds: [embed]
@@ -403,25 +533,53 @@ client.on('interactionCreate', async interaction => {
 
         if (interaction.customId === 'solved_ticket') {
 
+            if (!isStaff) {
+
+                return interaction.reply({
+                    content: '❌ Nu ai acces.',
+                    ephemeral: true
+                });
+
+            }
+
             const user = interaction.channel.topic;
+
+            await interaction.channel.permissionOverwrites.edit(
+                interaction.guild.id,
+                {
+                    SendMessages: false
+                }
+            );
+
+            await interaction.channel.permissionOverwrites.edit(
+                ownerRoleId,
+                {
+                    SendMessages: true,
+                    ViewChannel: true
+                }
+            );
+
+            await interaction.channel.permissionOverwrites.edit(
+                coOwnerRoleId,
+                {
+                    SendMessages: true,
+                    ViewChannel: true
+                }
+            );
 
             await interaction.reply({
                 content:
                     `${user}\n\n` +
                     '✅ Ticket-ul tău a fost rezolvat.\n' +
-                    '⏳ Acesta se va închide în 5 minute.'
+                    '⏳ Acesta va rămâne deschis 5 minute pentru verificare.\n\n' +
+                    '⛔ Doar Owner / Co-Owner mai poate scrie.'
             });
 
             setTimeout(async () => {
 
-                await interaction.channel.permissionOverwrites.edit(
-                    interaction.guild.id,
-                    {
-                        SendMessages: false
-                    }
+                interaction.channel.setName(
+                    `resolved-${interaction.channel.name}`
                 );
-
-                interaction.channel.setName(`resolved-${interaction.channel.name}`);
 
             }, 300000);
 
@@ -476,8 +634,6 @@ client.on('interactionCreate', async interaction => {
                 ]
 
             });
-
-            // ================= LOGS =================
 
             const logs = interaction.guild.channels.cache.find(
                 c => c.name === 'ticket-logs'
