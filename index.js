@@ -4,10 +4,11 @@ if (message.content === '!server') {
     try {
 
         const response = await fetch('https://servers-frontend.fivem.net/api/servers/single/5oyzqr7');
+
         const data = await response.json();
 
-        const players = data.Data.clients;
-        const maxPlayers = data.Data.sv_maxclients;
+        const players = data.Data.clients || 0;
+        const maxPlayers = data.Data.sv_maxclients || 128;
 
         const embed = new EmbedBuilder()
 
@@ -42,22 +43,22 @@ if (message.content === '!server') {
 
             .setColor('#ff0000')
 
-            // LOGO SERVER
-            .setThumbnail('https://i.imgur.com/1X4JQ9x.png')
+            .setThumbnail('https://cdn-icons-png.flaticon.com/512/5968/5968292.png')
 
-            // BANNER SERVER
             .setImage('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1400&auto=format&fit=crop')
 
             .setFooter({
                 text: 'Originalii Romania • FiveM',
-                iconURL: 'https://i.imgur.com/1X4JQ9x.png'
+                iconURL: 'https://cdn-icons-png.flaticon.com/512/5968/5968292.png'
             })
 
             .setTimestamp();
 
         message.channel.send({ embeds: [embed] });
 
-    } catch (err) {
+    } catch (error) {
+
+        console.log(error);
 
         message.channel.send('❌ Server offline.');
 
