@@ -168,10 +168,10 @@ client.on('messageCreate', async message => {
                 'https://servers-frontend.fivem.net/api/servers/single/5oyzqr7'
             );
 
-            const data = await response.json();
+            const json = await response.json();
 
-            const players = data.Data.clients;
-            const maxPlayers = data.Data.sv_maxclients;
+            const players = json.Data.players.length;
+            const maxPlayers = json.Data.sv_maxclients;
 
             const embed = new EmbedBuilder()
 
