@@ -32,11 +32,10 @@ const shop = [
 // ================= VIP SHOP =================
 
 const vipshop = [
-    { nume: 'VIP Bronze - 30 Zile', pret: '10€' },
+    { nume: 'VIP Bronze - 30 Zile', pret: '15€' },
     { nume: 'VIP Silver - 30 Zile', pret: '20€' },
-    { nume: 'VIP Gold - 30 Zile', pret: '30€' },
-    { nume: 'VIP Emerald - 30 Zile', pret: '40€' },
-    { nume: 'VIP Diamond - 30 Zile', pret: '50€' }
+    { nume: 'VIP Gold - 30 Zile', pret: '25€' },
+    { nume: 'VIP Diamond - 30 Zile', pret: '30€' }
 ];
 
 // ================= READY =================
