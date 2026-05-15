@@ -80,9 +80,7 @@ client.on('messageCreate', async message => {
 
                 .setThumbnail('https://i.imgur.com/1X4JQ9x.png')
 
-                .setImage(
-                    'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1400&auto=format&fit=crop'
-                )
+                .setImage('https://i.imgur.com/r6VtAqF.jpeg')
 
                 .setFooter({
                     text: 'Originalii Romania • FiveM',
