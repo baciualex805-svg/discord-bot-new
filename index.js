@@ -5,6 +5,7 @@ const {
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
+    StringSelectMenuBuilder,
     PermissionsBitField,
     ChannelType
 } = require('discord.js');
@@ -229,7 +230,7 @@ client.on('messageCreate', async message => {
 
     }
 
-    // ================= TICKET PANEL =================
+    // ================= PANEL =================
 
     if (message.content === '!panel') {
 
@@ -241,11 +242,7 @@ client.on('messageCreate', async message => {
                 '━━━━━━━━━━━━━━━━━━\n' +
                 '📩 APASĂ PE BUTONUL DE MAI JOS\n' +
                 'pentru a deschide un ticket.\n' +
-                '━━━━━━━━━━━━━━━━━━\n\n' +
-                '🛒 SHOP SUPPORT\n' +
-                '⚠️ REPORT PLAYER\n' +
-                '💰 DONAȚII\n' +
-                '🆘 AJUTOR GENERAL'
+                '━━━━━━━━━━━━━━━━━━'
             )
 
             .setColor('#ff0000')
@@ -257,7 +254,7 @@ client.on('messageCreate', async message => {
         const row = new ActionRowBuilder().addComponents(
 
             new ButtonBuilder()
-                .setCustomId('create_ticket')
+                .setCustomId('open_ticket_menu')
                 .setLabel('🎫 DESCHIDE TICKET')
                 .setStyle(ButtonStyle.Danger)
 
@@ -272,105 +269,282 @@ client.on('messageCreate', async message => {
 
 });
 
-// ================= BUTTONS =================
+// ================= INTERACTIONS =================
 
 client.on('interactionCreate', async interaction => {
 
-    if (!interaction.isButton()) return;
+    // ================= BUTTONS =================
 
-    // ================= CREATE TICKET =================
+    if (interaction.isButton()) {
 
-    if (interaction.customId === 'create_ticket') {
+        // ================= OPEN MENU =================
 
-        const existing = interaction.guild.channels.cache.find(
-            c => c.name === `ticket-${interaction.user.username.toLowerCase()}`
-        );
+        if (interaction.customId === 'open_ticket_menu') {
 
-        if (existing) {
+            const menu = new StringSelectMenuBuilder()
+
+                .setCustomId('ticket_select')
+
+                .setPlaceholder('📩 Alege categoria ticketului')
+
+                .addOptions([
+                    {
+                        label: 'Raport Admin',
+                        description: 'Raportează un admin',
+                        value: 'Raport Admin',
+                        emoji: '⚠️'
+                    },
+                    {
+                        label: 'Shop',
+                        description: 'Probleme shop',
+                        value: 'Shop',
+                        emoji: '🛒'
+                    },
+                    {
+                        label: 'Donații',
+                        description: 'Probleme donații',
+                        value: 'Donații',
+                        emoji: '💰'
+                    },
+                    {
+                        label: 'Probleme Generale',
+                        description: 'Ajutor general',
+                        value: 'Probleme Generale',
+                        emoji: '🆘'
+                    },
+                    {
+                        label: 'Contact Owneri',
+                        description: 'Contact owneri',
+                        value: 'Contact Owneri',
+                        emoji: '👑'
+                    }
+                ]);
+
+            const row = new ActionRowBuilder().addComponents(menu);
 
             return interaction.reply({
-                content: '❌ Ai deja un ticket deschis.',
+                content: '📩 Selectează categoria ticketului:',
+                components: [row],
                 ephemeral: true
             });
 
         }
 
-        const channel = await interaction.guild.channels.create({
+        // ================= CLOSE =================
 
-            name: `ticket-${interaction.user.username}`,
+        if (interaction.customId === 'close_ticket') {
 
-            type: ChannelType.GuildText,
-
-            permissionOverwrites: [
-
-                {
-                    id: interaction.guild.id,
-                    deny: [PermissionsBitField.Flags.ViewChannel]
-                },
-
-                {
-                    id: interaction.user.id,
-                    allow: [
-                        PermissionsBitField.Flags.ViewChannel,
-                        PermissionsBitField.Flags.SendMessages
-                    ]
-                }
-
-            ]
-
-        });
-
-        const embed = new EmbedBuilder()
-
-            .setTitle('🎫 TICKET DESCHIS')
-
-            .setDescription(
-                `👋 Salut ${interaction.user}\n\n` +
-                '📩 Un membru staff îți va răspunde curând.\n\n' +
-                '❌ Pentru a închide ticketul apasă butonul de mai jos.'
-            )
-
-            .setColor('#00ff88')
-
-            .setFooter({
-                text: 'Originalii Romania • Support'
+            await interaction.reply({
+                content: '❌ Ticket-ul se va închide în 5 secunde.'
             });
 
-        const closeRow = new ActionRowBuilder().addComponents(
+            setTimeout(async () => {
 
-            new ButtonBuilder()
-                .setCustomId('close_ticket')
-                .setLabel('❌ ÎNCHIDE TICKET')
-                .setStyle(ButtonStyle.Secondary)
+                await interaction.channel.permissionOverwrites.edit(
+                    interaction.guild.id,
+                    {
+                        SendMessages: false
+                    }
+                );
 
-        );
+                interaction.channel.setName(`closed-${interaction.channel.name}`);
 
-        await channel.send({
-            content: `${interaction.user}`,
-            embeds: [embed],
-            components: [closeRow]
-        });
+            }, 5000);
 
-        interaction.reply({
-            content: `✅ Ticket creat: ${channel}`,
-            ephemeral: true
-        });
+        }
+
+        // ================= WAITING =================
+
+        if (interaction.customId === 'waiting_ticket') {
+
+            const embed = new EmbedBuilder()
+
+                .setTitle('⏳ AȘTEPTARE')
+
+                .setDescription(
+                    '━━━━━━━━━━━━━━━━━━\n' +
+                    '📩 Vei fii preluat în cel mai scurt timp\n' +
+                    'de un membru staff mai mare.\n' +
+                    '━━━━━━━━━━━━━━━━━━'
+                )
+
+                .setColor('#ffaa00');
+
+            interaction.reply({
+                embeds: [embed]
+            });
+
+        }
+
+        // ================= HIGHER STAFF =================
+
+        if (interaction.customId === 'higher_ticket') {
+
+            const embed = new EmbedBuilder()
+
+                .setTitle('👑 RETRIMIS')
+
+                .setDescription(
+                    '━━━━━━━━━━━━━━━━━━\n' +
+                    '📩 Ticket-ul a fost retrimis\n' +
+                    'către un grad superior.\n' +
+                    '━━━━━━━━━━━━━━━━━━'
+                )
+
+                .setColor('#ff0000');
+
+            interaction.reply({
+                embeds: [embed]
+            });
+
+        }
+
+        // ================= SOLVED =================
+
+        if (interaction.customId === 'solved_ticket') {
+
+            const user = interaction.channel.topic;
+
+            await interaction.reply({
+                content:
+                    `${user}\n\n` +
+                    '✅ Ticket-ul tău a fost rezolvat.\n' +
+                    '⏳ Acesta se va închide în 5 minute.'
+            });
+
+            setTimeout(async () => {
+
+                await interaction.channel.permissionOverwrites.edit(
+                    interaction.guild.id,
+                    {
+                        SendMessages: false
+                    }
+                );
+
+                interaction.channel.setName(`resolved-${interaction.channel.name}`);
+
+            }, 300000);
+
+        }
 
     }
 
-    // ================= CLOSE TICKET =================
+    // ================= SELECT MENU =================
 
-    if (interaction.customId === 'close_ticket') {
+    if (interaction.isStringSelectMenu()) {
 
-        await interaction.reply({
-            content: '❌ Ticket închis în 5 secunde...'
-        });
+        if (interaction.customId === 'ticket_select') {
 
-        setTimeout(() => {
+            const categorie = interaction.values[0];
 
-            interaction.channel.delete();
+            const existing = interaction.guild.channels.cache.find(
+                c => c.name === `ticket-${interaction.user.username.toLowerCase()}`
+            );
 
-        }, 5000);
+            if (existing) {
+
+                return interaction.reply({
+                    content: '❌ Ai deja un ticket deschis.',
+                    ephemeral: true
+                });
+
+            }
+
+            const channel = await interaction.guild.channels.create({
+
+                name: `ticket-${interaction.user.username}`,
+
+                topic: `<@${interaction.user.id}>`,
+
+                type: ChannelType.GuildText,
+
+                permissionOverwrites: [
+
+                    {
+                        id: interaction.guild.id,
+                        deny: [PermissionsBitField.Flags.ViewChannel]
+                    },
+
+                    {
+                        id: interaction.user.id,
+                        allow: [
+                            PermissionsBitField.Flags.ViewChannel,
+                            PermissionsBitField.Flags.SendMessages
+                        ]
+                    }
+
+                ]
+
+            });
+
+            // ================= LOGS =================
+
+            const logs = interaction.guild.channels.cache.find(
+                c => c.name === 'ticket-logs'
+            );
+
+            if (logs) {
+
+                logs.send(
+                    `🟢 Ticket creat de ${interaction.user}\n📂 Categorie: ${categorie}\n📩 Canal: ${channel}`
+                );
+
+            }
+
+            const embed = new EmbedBuilder()
+
+                .setTitle('🎫 TICKET DESCHIS')
+
+                .setDescription(
+                    `👋 Salut ${interaction.user}\n\n` +
+                    '📩 Vă mulțumim că ne-ați contactat.\n' +
+                    '⏳ În cel mai scurt timp cineva din echipa noastră\n' +
+                    'se va ocupa de problema dumneavoastră.\n\n' +
+                    `📂 Categorie: **${categorie}**`
+                )
+
+                .setColor('#00ff88')
+
+                .setFooter({
+                    text: 'Originalii Romania • Support'
+                });
+
+            const row = new ActionRowBuilder().addComponents(
+
+                new ButtonBuilder()
+                    .setCustomId('close_ticket')
+                    .setLabel('❌ Închide Ticket')
+                    .setStyle(ButtonStyle.Danger),
+
+                new ButtonBuilder()
+                    .setCustomId('higher_ticket')
+                    .setLabel('👑 Grad Mai Mare')
+                    .setStyle(ButtonStyle.Primary),
+
+                new ButtonBuilder()
+                    .setCustomId('waiting_ticket')
+                    .setLabel('⏳ Așteptare')
+                    .setStyle(ButtonStyle.Secondary),
+
+                new ButtonBuilder()
+                    .setCustomId('solved_ticket')
+                    .setLabel('✅ Rezolvat')
+                    .setStyle(ButtonStyle.Success)
+
+            );
+
+            await channel.send({
+                content: `${interaction.user}`,
+                embeds: [embed],
+                components: [row]
+            });
+
+            interaction.reply({
+                content: `✅ Ticket creat: ${channel}`,
+                ephemeral: true
+            });
+
+        }
 
     }
 
