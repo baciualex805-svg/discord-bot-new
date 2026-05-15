@@ -11,7 +11,7 @@ const client = new Client({
 const TOKEN = process.env.TOKEN;
 
 const shop = [
-    { id: 5, nume: 'VIP Emerald + 1.000.000 Bani', pret: '50€' },
+    { id: 5, nume: 'VIP Diamond + 1.000.000 Bani', pret: '50€' },
     { id: 6, nume: 'VIP Gold + 1.000.000 Bani', pret: '45€' },
     { id: 8, nume: 'VIP Silver + 1.000.000 Bani', pret: '40€' },
     { id: 9, nume: 'VIP Bronze + 1.000.000 Bani', pret: '35€' },
@@ -35,17 +35,17 @@ client.once('ready', () => {
     console.log('Bot online!');
 });
 
-client.on('messageCreate', message => {
+client.on('messageCreate', async message => {
 
     if (message.author.bot) return;
 
-    // SHOP NORMAL
+    // SHOP
     if (message.content === '!shop') {
 
         let text = '';
 
         shop.forEach(item => {
-            text += '🛒 ID ' + item.id + ' • ' + item.nume + ' • 💶 ' + item.pret + '\n';
+            text += `🛒 ID ${item.id} • ${item.nume} • 💶 ${item.pret}\n`;
         });
 
         const embed = new EmbedBuilder()
@@ -80,13 +80,13 @@ client.on('messageCreate', message => {
 
             .setColor('#0099ff')
 
-            .setThumbnail('https://cdn-icons-png.flaticon.com/512/5968/5968299.png')
+            .setThumbnail('https://cdn-icons-png.flaticon.com/512/3135/3135715.png')
 
-            .setImage('https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=1400&auto=format&fit=crop')
+            .setImage('https://images.unsplash.com/photo-1556740749-887f6717d7e4?q=80&w=1400&auto=format&fit=crop')
 
             .setFooter({
                 text: 'Originalii Romania • Shop Oficial',
-                iconURL: 'https://cdn-icons-png.flaticon.com/512/5968/5968299.png'
+                iconURL: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'
             })
 
             .setTimestamp();
@@ -100,7 +100,7 @@ client.on('messageCreate', message => {
         let text = '';
 
         vipshop.forEach(item => {
-            text += '⭐ ' + item.nume + ' • 💶 ' + item.pret + '\n';
+            text += `⭐ ${item.nume} • 💶 ${item.pret}\n`;
         });
 
         const embed = new EmbedBuilder()
