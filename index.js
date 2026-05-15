@@ -1,38 +1,14 @@
-const {
-    Client,
-    GatewayIntentBits,
-    EmbedBuilder
-} = require('discord.js');
+// SERVER STATUS
+if (message.content === '!server') {
 
-const client = new Client({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
-    ]
-});
+    try {
 
-const TOKEN = process.env.TOKEN;
+        const response = await fetch('https://servers-frontend.fivem.net/api/servers/single/5oyzqr7');
 
-// ================= READY =================
+        const data = await response.json();
 
-client.once('ready', () => {
-
-    console.log('Bot online!');
-
-    client.user.setActivity('Originalii Romania');
-
-});
-
-// ================= COMMANDS =================
-
-client.on('messageCreate', async message => {
-
-    if (message.author.bot) return;
-
-    // ================= SERVER =================
-
-    if (message.content === '!server') {
+        const players = data.Data.clients;
+        const maxPlayers = data.Data.sv_maxclients;
 
         const embed = new EmbedBuilder()
 
@@ -41,7 +17,7 @@ client.on('messageCreate', async message => {
             .setDescription(
                 '━━━━━━━━━━━━━━━━━━\n' +
                 '🟢 **Server Online**\n\n' +
-                '👥 **Players:** `Live`\n\n' +
+                `👥 **Players:** \`${players}/${maxPlayers}\`\n\n` +
                 '🌐 **Connect:**\n' +
                 '`cfx.re/join/5oyzqr7`\n' +
                 '━━━━━━━━━━━━━━━━━━'
@@ -67,20 +43,27 @@ client.on('messageCreate', async message => {
 
             .setColor('#ff0000')
 
-            .setThumbnail('https://cdn-icons-png.flaticon.com/512/5968/5968292.png')
+            // LOGO SERVER
+            .setThumbnail('https://i.imgur.com/1X4JQ9x.png')
 
+            // BANNER SERVER
             .setImage('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1400&auto=format&fit=crop')
 
             .setFooter({
-                text: 'Originalii Romania • FiveM'
+                text: 'Originalii Romania • FiveM',
+                iconURL: 'https://i.imgur.com/1X4JQ9x.png'
             })
 
             .setTimestamp();
 
         message.channel.send({ embeds: [embed] });
 
+    } catch (err) {
+
+        console.log(err);
+
+        message.channel.send('❌ Server offline.');
+
     }
 
-});
-
-client.login(TOKEN);
+}
