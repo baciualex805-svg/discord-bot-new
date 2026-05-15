@@ -1,7 +1,12 @@
 const {
     Client,
     GatewayIntentBits,
-    EmbedBuilder
+    EmbedBuilder,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    PermissionsBitField,
+    ChannelType
 } = require('discord.js');
 
 const client = new Client({
@@ -221,6 +226,151 @@ client.on('messageCreate', async message => {
             message.channel.send('❌ Server offline.');
 
         }
+
+    }
+
+    // ================= TICKET PANEL =================
+
+    if (message.content === '!panel') {
+
+        const embed = new EmbedBuilder()
+
+            .setTitle('🎫 ORIGINALII ROMANIA • SUPPORT')
+
+            .setDescription(
+                '━━━━━━━━━━━━━━━━━━\n' +
+                '📩 APASĂ PE BUTONUL DE MAI JOS\n' +
+                'pentru a deschide un ticket.\n' +
+                '━━━━━━━━━━━━━━━━━━\n\n' +
+                '🛒 SHOP SUPPORT\n' +
+                '⚠️ REPORT PLAYER\n' +
+                '💰 DONAȚII\n' +
+                '🆘 AJUTOR GENERAL'
+            )
+
+            .setColor('#ff0000')
+
+            .setFooter({
+                text: 'Originalii Romania • Ticket System'
+            });
+
+        const row = new ActionRowBuilder().addComponents(
+
+            new ButtonBuilder()
+                .setCustomId('create_ticket')
+                .setLabel('🎫 DESCHIDE TICKET')
+                .setStyle(ButtonStyle.Danger)
+
+        );
+
+        message.channel.send({
+            embeds: [embed],
+            components: [row]
+        });
+
+    }
+
+});
+
+// ================= BUTTONS =================
+
+client.on('interactionCreate', async interaction => {
+
+    if (!interaction.isButton()) return;
+
+    // ================= CREATE TICKET =================
+
+    if (interaction.customId === 'create_ticket') {
+
+        const existing = interaction.guild.channels.cache.find(
+            c => c.name === `ticket-${interaction.user.username.toLowerCase()}`
+        );
+
+        if (existing) {
+
+            return interaction.reply({
+                content: '❌ Ai deja un ticket deschis.',
+                ephemeral: true
+            });
+
+        }
+
+        const channel = await interaction.guild.channels.create({
+
+            name: `ticket-${interaction.user.username}`,
+
+            type: ChannelType.GuildText,
+
+            permissionOverwrites: [
+
+                {
+                    id: interaction.guild.id,
+                    deny: [PermissionsBitField.Flags.ViewChannel]
+                },
+
+                {
+                    id: interaction.user.id,
+                    allow: [
+                        PermissionsBitField.Flags.ViewChannel,
+                        PermissionsBitField.Flags.SendMessages
+                    ]
+                }
+
+            ]
+
+        });
+
+        const embed = new EmbedBuilder()
+
+            .setTitle('🎫 TICKET DESCHIS')
+
+            .setDescription(
+                `👋 Salut ${interaction.user}\n\n` +
+                '📩 Un membru staff îți va răspunde curând.\n\n' +
+                '❌ Pentru a închide ticketul apasă butonul de mai jos.'
+            )
+
+            .setColor('#00ff88')
+
+            .setFooter({
+                text: 'Originalii Romania • Support'
+            });
+
+        const closeRow = new ActionRowBuilder().addComponents(
+
+            new ButtonBuilder()
+                .setCustomId('close_ticket')
+                .setLabel('❌ ÎNCHIDE TICKET')
+                .setStyle(ButtonStyle.Secondary)
+
+        );
+
+        await channel.send({
+            content: `${interaction.user}`,
+            embeds: [embed],
+            components: [closeRow]
+        });
+
+        interaction.reply({
+            content: `✅ Ticket creat: ${channel}`,
+            ephemeral: true
+        });
+
+    }
+
+    // ================= CLOSE TICKET =================
+
+    if (interaction.customId === 'close_ticket') {
+
+        await interaction.reply({
+            content: '❌ Ticket închis în 5 secunde...'
+        });
+
+        setTimeout(() => {
+
+            interaction.channel.delete();
+
+        }, 5000);
 
     }
 
