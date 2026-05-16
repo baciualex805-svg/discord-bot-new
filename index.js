@@ -29,7 +29,6 @@ const coOwnerRoleId = '1488115248945827992';
 // ================= SHOP =================
 
 const shop = [
-    { id: 5, nume: 'VIP Diamond + 1.000.000 Bani', pret: '50€' },
     { id: 6, nume: 'VIP Gold + 1.000.000 Bani', pret: '45€' },
     { id: 8, nume: 'VIP Silver + 1.000.000 Bani', pret: '40€' },
     { id: 9, nume: 'VIP Bronze + 1.000.000 Bani', pret: '35€' },
